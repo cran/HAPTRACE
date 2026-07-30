@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Shweta Sahoo, Sara de las Heras-Saldana, Julius H. J. van der Werf, Mohammad H. Ferdosi" />
+
+<meta name="date" content="2026-07-22" />
+
+<title>Introduction to HAPTRACE</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to HAPTRACE</h1>
+<h4 class="author">Shweta Sahoo, Sara de las Heras-Saldana, Julius H. J.
+van der Werf, Mohammad H. Ferdosi</h4>
+<h4 class="date">2026-07-22</h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<div style="text-align: justify;">
+<p>In livestock breeding programs, genetically superior animals from
+multiple breeds are often selected and mated to enhance genetic merit
+and genetic diversity, resulting in an admixed population. The genomic
+prediction of an animal’s genetic merit requires the use of pedigree and
+genotype information. Tracking breed-specific genomic segments from
+different populations is essential to characterise population admixture
+and assess the feasibility of the animal breeding program.</p>
+<p>The HAPTRACE package allows haplotype-based tracking in a simulated
+admixed population for the accurate estimation of breed composition
+<span class="citation">(Sahoo et al., 2025)</span>. This package
+provides a wide range of applications, offering the capability to
+simulate complex animal breeding programs. Output files are provided in
+the format required for PLINK <span class="citation">(Purcell et al.,
+2007)</span> and SNeP software <span class="citation">(Barbato et al.,
+2015)</span>, facilitating population diversity analysis. Additionally,
+this package allows the visualization of haplotypes, QTL effects,
+recombination and admixture to better describe the population.</p>
+<p>This vignette provides a small example of how to use HAPTRACE for
+simulating pure and admixed populations, as well as visualize the
+outputs.</p>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(HAPTRACE)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span></code></pre></div>
+</div>
+<div id="input-data-for-simulating-the-population" class="section level2">
+<h2>Input data for simulating the population</h2>
+<div style="text-align: justify;">
+<p>HAPTRACE supports three simulation modes, each differing in the
+source of the base population: 1) an internally generated base
+population; 2) a base population from QMSim outputs; or 3) use real
+genotype data as the starting point. However, to obtain the haplotype
+information, the user should ensure that the genotypes are phased. This
+vignette describes the internal simulation of a base population and its
+subsequent use in generating an admixed population.</p>
+<p>First, a MAP and QTL effects should be simulated using the functions
+<code>generateMAP</code> and <code>QTLeffects</code>, respectively. The
+MAP file includes information on marker ID, chromosome number and
+position, while the QTL effects file describes QTLID, chromosome number,
+QTL position and QTL effects. The <code>mapQTLfile</code> function must
+be used to combine QTL effects and markers to obtain the total number of
+markers. In real data analysis, SNP markers are often observed to be
+around the QTL. However, for simulation purposes in this package, the
+QTL position is included along with the map file to get a combined
+marker file. The output from the combined file will be used as input to
+generate a historical population.</p>
+</div>
+<div id="creating-map-and-qtl-file" class="section level3">
+<h3>Creating MAP and QTL file</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>MAPfile <span class="ot">&lt;-</span> <span class="fu">generateMAP</span>(<span class="at">nChr =</span> <span class="dv">10</span>, <span class="at">n_markers =</span> <span class="dv">1000</span>, <span class="at">len_Chr =</span> <span class="dv">100</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>QTLfile <span class="ot">&lt;-</span> <span class="fu">QTLeffects</span>(<span class="at">n_QTL_Chr =</span> <span class="dv">10</span>, <span class="at">nChr =</span> <span class="dv">10</span>, <span class="at">len_Chr =</span> <span class="dv">100</span>, <span class="at">effect_distribution =</span> <span class="st">&quot;gamma&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>MAP_QTL_Pop <span class="ot">&lt;-</span> <span class="fu">mapQTLfile</span>(<span class="at">map =</span> MAPfile, <span class="at">QTL =</span> QTLfile)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>Effect <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(<span class="fu">as.numeric</span>(MAP_QTL_Pop<span class="sc">$</span>Effect))</span></code></pre></div>
+</div>
+<div id="creating-a-historical-population" class="section level3">
+<h3>Creating a historical population</h3>
+<div style="text-align: justify;">
+<p>After generating a combined MAP and QTL file, the function
+<code>generateHP</code> will generate haplotype information for the
+historical population across multiple generations, as described below.
+The historical population provides haplotype information for the base
+population. Users can define the number of sires and dams to mate and
+simulate the next generation of progenies, as well as the selection
+types (e.g. random, based on phenotypes or true breeding values). In
+this case, we opted for random selection for demonstration.</p>
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>Historical_Population <span class="ot">&lt;-</span> <span class="fu">generateHP</span>(<span class="at">n_generations =</span> <span class="dv">5</span>, <span class="at">n_animals =</span> <span class="dv">2000</span>, </span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>                                   <span class="at">map =</span> MAP_QTL_Pop, <span class="at">nSire =</span> <span class="dv">200</span>, <span class="at">nDam =</span> <span class="dv">500</span>, </span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                                   <span class="at">nProgeny =</span> <span class="dv">1000</span>, <span class="at">mutationRate =</span> <span class="fl">2.5</span> <span class="sc">*</span> <span class="dv">10</span><span class="sc">^-</span><span class="dv">5</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                                   <span class="at">SelType =</span> <span class="st">&quot;random&quot;</span>, <span class="at">Effect =</span> Effect, <span class="at">nChr =</span> <span class="dv">10</span>, </span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>                                   <span class="at">h2 =</span> <span class="fl">0.3</span>, <span class="at">trait_mean =</span> <span class="dv">40</span>, <span class="at">VarE =</span> <span class="fl">0.6</span>,<span class="at">recL =</span> <span class="dv">10</span>, </span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>                                   <span class="at">minLength =</span> <span class="dv">200</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; Working on Generation: 1</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; Working on Generation: 2</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; Working on Generation: 3</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; Working on Generation: 4</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; Working on Generation: 5</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>Sim_HP <span class="ot">&lt;-</span> Historical_Population<span class="sc">$</span>Haplotype</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="fu">str</span>(Sim_HP)</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt;  num [1:10000, 1:10100] 0 1 0 1 0 0 0 0 0 0 ...</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt;  - attr(*, &quot;dimnames&quot;)=List of 2</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt;   ..$ : chr [1:10000] &quot;H_1&quot; &quot;H_1&quot; &quot;H_2&quot; &quot;H_2&quot; ...</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt;   ..$ : NULL</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="fu">class</span>(Sim_HP)</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; [1] &quot;matrix&quot; &quot;array&quot;</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>Sim_HP[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt;     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; H_1    0    0    0    1    1    0    0    0    0     0</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; H_1    1    1    0    0    1    0    1    1    0     0</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt; H_2    0    1    1    0    0    0    0    0    0     0</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt; H_2    1    1    0    0    1    0    1    1    0     0</span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt; H_3    0    1    1    0    1    0    0    1    0     1</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt; H_3    0    1    1    1    1    0    1    1    0     1</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt; H_4    0    1    1    0    0    0    0    0    0     0</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt; H_4    0    1    1    1    1    0    1    1    0     1</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt; H_5    0    1    1    0    1    0    0    1    0     1</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt; H_5    0    0    1    1    0    0    0    0    1     0</span></span></code></pre></div>
+<div style="text-align: justify;">
+<p>Next, the historical population is divided into populations A and B
+for further simulation.</p>
+<p>After that, we can rescale the QTL effect according to the genomic
+information from the animals and the phenotypic standard deviation to
+obtain the desirable variance components for the simulated trait.</p>
+</div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>Population_A <span class="ot">&lt;-</span> Sim_HP[<span class="dv">1</span><span class="sc">:</span>(<span class="fu">nrow</span>(Sim_HP)<span class="sc">/</span><span class="dv">2</span>),]</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>Population_B <span class="ot">&lt;-</span> Sim_HP[(<span class="fu">nrow</span>(Sim_HP)<span class="sc">/</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span><span class="fu">nrow</span>(Sim_HP), ]</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>EffectA <span class="ot">&lt;-</span> <span class="fu">Rescale</span>(<span class="at">Haplotype =</span> Population_A, <span class="at">Effect =</span> Effect, <span class="at">Phenosd =</span> <span class="dv">3</span>, <span class="at">h2 =</span> <span class="fl">0.3</span>)</span></code></pre></div>
+</div>
+<div id="assigning-of-population-code-and-haplotype-recording" class="section level3">
+<h3>Assigning of population code and haplotype recording</h3>
+<div style="text-align: justify;">
+<p>To track the pedigree, we need to assign distinct codes to
+populations A and B, which will be reflected in the animals’ ID.
+Similarly, the haplotypes of these two populations should be recoded to
+facilitate tracking them. In the following example, the resulting
+haplotype information was recoded from (0,1) to (-1,1) and (-2,2) for
+populations A and B, respectively.</p>
+</div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Assignment of population code</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>Population_A <span class="ot">&lt;-</span> <span class="fu">PopulationID</span>(<span class="at">Population =</span> Population_A, <span class="at">PopCode =</span> <span class="st">&quot;P1&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>Population_B <span class="ot">&lt;-</span> <span class="fu">PopulationID</span>(<span class="at">Population =</span> Population_B, <span class="at">PopCode =</span> <span class="st">&quot;P2&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co"># Recode haplotype of populations A and B with 1 and 2, respectively</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>Population_A <span class="ot">&lt;-</span> <span class="fu">Recode_Haplotype</span>(<span class="at">df =</span> Population_A, <span class="at">popBase =</span> <span class="dv">1</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>Population_B <span class="ot">&lt;-</span> <span class="fu">Recode_Haplotype</span>(<span class="at">df =</span> Population_B, <span class="at">popBase =</span> <span class="dv">2</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="modelling-the-breeding-program" class="section level2">
+<h2>Modelling the breeding program</h2>
+<div style="text-align: justify;">
+<p>Populations A and B are simulated for 3 generations with different
+numbers of sires and dams assigned for random mating using
+<code>GenOnePopulation</code>. This function provides information on the
+pedigree, phenotypes, haplotypes coded according to the breed of origin,
+the original haplotype information, true breeding value and
+recombination points from sires and dams. The parameter
+<code>recL</code> defines the average number of recombinations per
+animal, which can be specified in the function. In addition to random
+selection, users can apply selection based on either phenotype or true
+breeding values.</p>
+</div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Population A</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>popA <span class="ot">&lt;-</span> <span class="fu">GenOnePopulation</span>(<span class="at">ngenerations =</span> <span class="dv">1</span>, <span class="at">map =</span> MAP_QTL_Pop,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                         <span class="at">populationSim =</span> Population_A, <span class="at">nSire =</span> <span class="dv">20</span>, <span class="at">nDam =</span> <span class="dv">100</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>                         <span class="at">mutationRate =</span> <span class="fl">2.5</span> <span class="sc">*</span> <span class="dv">10</span><span class="sc">^-</span><span class="dv">5</span>, <span class="at">SelType =</span> <span class="st">&quot;random&quot;</span>, </span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                         <span class="at">h2 =</span> <span class="fl">0.3</span>, <span class="at">trait_mean =</span> <span class="dv">10</span>, <span class="at">VarE =</span> <span class="fl">0.6</span>,<span class="at">Effect =</span> Effect, </span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>                         <span class="at">recL =</span> <span class="dv">10</span>, <span class="at">nChr =</span> <span class="dv">10</span>, <span class="at">minLength =</span> <span class="dv">200</span>, <span class="at">IndStartVal=</span><span class="dv">1</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>                         <span class="at">prefixID =</span> <span class="st">&quot;A&quot;</span>, <span class="at">nProgeny =</span> <span class="dv">300</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; Working on Generation: 1</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co"># Population B</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>popB <span class="ot">&lt;-</span> <span class="fu">GenOnePopulation</span>(<span class="at">ngenerations =</span> <span class="dv">1</span>, <span class="at">map =</span> MAP_QTL_Pop,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>                         <span class="at">populationSim =</span> Population_B, <span class="at">nSire =</span> <span class="dv">10</span>, <span class="at">nDam =</span> <span class="dv">100</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>                         <span class="at">mutationRate =</span> <span class="fl">2.5</span> <span class="sc">*</span> <span class="dv">10</span><span class="sc">^-</span><span class="dv">5</span>, <span class="at">SelType =</span> <span class="st">&quot;random&quot;</span>, </span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>                         <span class="at">h2 =</span> <span class="fl">0.3</span>, <span class="at">trait_mean =</span> <span class="dv">30</span>, <span class="at">VarE =</span> <span class="fl">0.6</span> ,<span class="at">Effect =</span> Effect,</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>                         <span class="at">recL =</span> <span class="dv">10</span>,<span class="at">nChr =</span> <span class="dv">10</span>, <span class="at">minLength =</span> <span class="dv">200</span>, <span class="at">IndStartVal=</span><span class="dv">1</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>                         <span class="at">prefixID =</span> <span class="st">&quot;B&quot;</span>, <span class="at">nProgeny =</span> <span class="dv">300</span>)</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; Working on Generation: 1</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co"># Simulation of a crossbred population derived from populations A and B</span></span></code></pre></div>
+<div style="text-align: justify;">
+<p>The animals from the last generation in populations A and B are
+crossed using the function <code>TwoPopCross</code> to get a crossbred
+population named F1Cross. The animals in this population were inter
+crossed further for the next 2 generations using
+<code>GenOnePopulation</code> function.</p>
+</div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># First cross between populations A and B</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>F1Cross <span class="ot">&lt;-</span> <span class="fu">TwoPopCross</span>(<span class="at">map =</span> MAP_QTL_Pop, <span class="at">populationSim_A =</span> popA<span class="sc">$</span>Haplotype,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>                       <span class="at">populationSim_B =</span> popB<span class="sc">$</span>Haplotype, <span class="at">nSireA =</span> <span class="dv">20</span>, <span class="at">nDamA =</span> <span class="dv">100</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>                       <span class="at">nSireB =</span> <span class="dv">10</span>, <span class="at">nDamB =</span> <span class="dv">100</span>, <span class="at">Sire_From =</span> <span class="st">&quot;A&quot;</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>                       <span class="at">mutationRate =</span> <span class="fl">2.5</span> <span class="sc">*</span> <span class="dv">10</span><span class="sc">^-</span><span class="dv">5</span>, <span class="at">SelType =</span> <span class="st">&quot;random&quot;</span>, <span class="at">h2 =</span> <span class="fl">0.3</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>                       <span class="at">trait_mean =</span> <span class="dv">20</span>,<span class="at">VarE_PopA =</span> <span class="fl">0.6</span>, <span class="at">VarE_PopB =</span> <span class="fl">0.6</span>, </span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>                       <span class="at">Effect_PopA =</span> Effect, <span class="at">Effect_PopB =</span> Effect,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>                       <span class="at">IndStartVal =</span> <span class="dv">1</span>, <span class="at">prefixID =</span> <span class="st">&quot;F1C&quot;</span>, <span class="at">nProgeny =</span> <span class="dv">300</span>, <span class="at">recL =</span> <span class="dv">10</span>, </span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>                       <span class="at">nChr =</span> <span class="dv">10</span>, <span class="at">minLength =</span> <span class="dv">200</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; Working on two populations cross</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Simulation of an admixed population</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>F3 <span class="ot">&lt;-</span> <span class="fu">GenOnePopulation</span>(<span class="at">ngenerations =</span> <span class="dv">2</span>, <span class="at">map =</span> MAP_QTL_Pop,</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>                       <span class="at">populationSim =</span> F1Cross<span class="sc">$</span>Haplotype,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>                       <span class="at">nSire =</span> <span class="dv">20</span>,<span class="at">nDam =</span> <span class="dv">100</span>,<span class="at">mutationRate =</span> <span class="fl">2.5</span> <span class="sc">*</span> <span class="dv">10</span><span class="sc">^-</span><span class="dv">5</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>                       <span class="at">SelType =</span> <span class="st">&quot;random&quot;</span>,<span class="at">h2 =</span> <span class="fl">0.3</span>, <span class="at">trait_mean =</span> <span class="dv">20</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>                       <span class="at">VarE =</span> <span class="fl">0.6</span>, <span class="at">Effect =</span> Effect, <span class="at">recL =</span> <span class="dv">10</span>, </span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>                       <span class="at">nChr =</span> <span class="dv">10</span>, <span class="at">minLength =</span> <span class="dv">200</span>, <span class="at">IndStartVal =</span> <span class="dv">1</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>                       <span class="at">prefixID =</span> <span class="st">&quot;C2&quot;</span>, <span class="at">nProgeny =</span> <span class="dv">300</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; Working on Generation: 1</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; Working on Generation: 2</span></span></code></pre></div>
+<div style="text-align: justify;">
+<p>Phenotype data can be extracted using <code>Ext_Pheno</code>, while
+<code>Ped_Pheno</code> provides both pedigree and phenotype
+information.</p>
+</div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Extracting pedigree and phenotype</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>F3Pheno <span class="ot">=</span> <span class="fu">Ext_Pheno</span>(<span class="at">df =</span> F3<span class="sc">$</span>population)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">head</span>(F3Pheno)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt;       AnimID      TBV phenotype</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; F1C_1  F1C_1 11.07333  30.22665</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; F1C_2  F1C_2 15.21855  35.35315</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; F1C_3  F1C_3 14.51038  34.20899</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; F1C_4  F1C_4 15.45068  35.61448</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; F1C_5  F1C_5 14.69087  34.19344</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; F1C_6  F1C_6 19.73718  38.28955</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>F3Ped_Pheno <span class="ot">=</span> <span class="fu">Ped_Pheno</span>(<span class="at">Pedigree =</span> F3<span class="sc">$</span>parents, <span class="at">Phenotype =</span> F3Pheno)</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="fu">head</span>(F3Ped_Pheno)</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt;     AnimID SireID   DamID Sex       TBV phenotype</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt; 1     C2_1 F1C_60 F1C_299   1  8.056027  27.68618</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt; 112   C2_2 F1C_60 F1C_299   1 12.029614  31.48033</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt; 223   C2_3 F1C_60 F1C_299   1  8.247797  27.64909</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; 334   C2_4 F1C_60 F1C_299   1 15.172398  35.28659</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt; 445   C2_5 F1C_60 F1C_223   1 14.923840  34.66154</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; 556   C2_6 F1C_60 F1C_223   1 10.083562  28.35290</span></span></code></pre></div>
+<div style="text-align: justify;">
+<p>The function <code>Coded_to_Haplo</code> converts the coded haplotype
+into (0,1) format and <code>MakeGeno</code> converts haplotypes to
+genotype information in (0,1,2) format.</p>
+</div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Extracting genotype information for F1Cross and F3 populations</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>CBgenotype <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">MakeGeno</span>(<span class="fu">Coded_to_Haplo</span>(F1Cross<span class="sc">$</span>Haplotype)),</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>                    <span class="fu">MakeGeno</span>(<span class="fu">Coded_to_Haplo</span>(F3<span class="sc">$</span>Haplotype)))</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>CBgenotype[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt;        [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; F1C_1     0    1    0    1    1    1    1    1    0     0</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; F1C_2     0    1    1    1    1    1    2    0    0     0</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; F1C_3     1    0    1    1    1    0    1    1    1     2</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt; F1C_4     2    0    1    0    2    0    1    1    1     1</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt; F1C_5     1    0    0    0    1    1    1    0    2     2</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt; F1C_6     2    0    0    1    1    1    1    0    2     1</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt; F1C_7     0    1    1    0    1    2    2    0    1     2</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt; F1C_8     1    0    0    0    1    1    1    0    2     2</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt; F1C_9     0    1    1    0    1    2    2    0    1     2</span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="co">#&gt; F1C_10    2    1    0    1    1    1    1    1    2     1</span></span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co"># Coded haplotype for F1Cross and F3 populations</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a>CBHaplotype <span class="ot">&lt;-</span> <span class="fu">rbind</span>(F1Cross<span class="sc">$</span>Haplotype,F3<span class="sc">$</span>Haplotype)</span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a>CBHaplotype[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a><span class="co">#&gt;       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span></span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a><span class="co">#&gt; F1C_1   -1   -1   -1    1    1    1    1   -1   -1    -1</span></span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a><span class="co">#&gt; F1C_1   -2    2   -2   -2   -2   -2   -2    2   -2    -2</span></span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a><span class="co">#&gt; F1C_2   -1   -1   -1    1    1    1    1   -1   -1    -1</span></span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="co">#&gt; F1C_2   -2    2    2   -2   -2   -2    2   -2   -2    -2</span></span>
+<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a><span class="co">#&gt; F1C_3   -1   -1    1    1   -1   -1    1   -1   -1     1</span></span>
+<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a><span class="co">#&gt; F1C_3    2   -2   -2   -2    2   -2   -2    2    2     2</span></span>
+<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a><span class="co">#&gt; F1C_4    1   -1   -1   -1    1   -1   -1   -1    1     1</span></span>
+<span id="cb10-27"><a href="#cb10-27" tabindex="-1"></a><span class="co">#&gt; F1C_4    2   -2    2   -2    2   -2    2    2   -2    -2</span></span>
+<span id="cb10-28"><a href="#cb10-28" tabindex="-1"></a><span class="co">#&gt; F1C_5    1   -1   -1   -1    1   -1   -1   -1    1     1</span></span>
+<span id="cb10-29"><a href="#cb10-29" tabindex="-1"></a><span class="co">#&gt; F1C_5   -2   -2   -2   -2   -2    2    2   -2    2     2</span></span></code></pre></div>
+</div>
+<div id="visualization-of-an-admixed-population" class="section level2">
+<h2>Visualization of an admixed population</h2>
+<div style="text-align: justify;">
+<p>The coded haplotype information recorded in the F3 admixed population
+helps to determine the accurate breed composition. Various plot
+functions are included in this package to provide an overview of how
+genomic segments are inherited from different populations. The
+<code>plotHaplo</code> function offers a snippet of haplotype segments
+inherited from different populations, whereas <code>Admixplot</code>
+depicts the accurate breed composition of an admixed population, where
+x-axis shows the number of animals and y-axis shows the proportion from
+different populations in different colors.</p>
+</div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Haplotype plot</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>smallF3 <span class="ot">&lt;-</span> F3<span class="sc">$</span>Haplotype[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, ]</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>F3pAplot <span class="ot">&lt;-</span> <span class="fu">plotHaplo</span>(<span class="at">Haplotype =</span> smallF3, </span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>                     <span class="at">colors =</span> <span class="fu">c</span>(<span class="st">&quot;#CC79A7&quot;</span>, <span class="st">&quot;#0072B2&quot;</span>), </span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>                     <span class="at">map =</span> MAP_QTL_Pop, <span class="at">nChr =</span> <span class="dv">10</span>, </span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>                     <span class="at">legendlabels =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>))</span></code></pre></div>
+<div class="float">
+<img role="img" aria-label="Figure 1: Haplotype plot for crossbred animals obtained from plotHaplo function" src="data:image/png;base64,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" alt="Figure 1: Haplotype plot for crossbred animals obtained from plotHaplo function" />
+<div class="figcaption">Figure 1: Haplotype plot for crossbred animals
+obtained from <code>plotHaplo</code> function</div>
+</div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Admixture plot</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>TBC <span class="ot">&lt;-</span> <span class="fu">trueBreedComp</span>(<span class="at">Haplotype =</span> smallF3)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co"># Arrange the population</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>TBC_data <span class="ot">&lt;-</span> TBC[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>), ]</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="fu">Admixplot</span>(<span class="at">trueBC =</span> TBC_data, </span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>          <span class="at">color =</span> <span class="fu">c</span>(<span class="st">&quot;#CC79A7&quot;</span>, <span class="st">&quot;#0072B2&quot;</span>),</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>          <span class="at">legendlabels =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>))</span></code></pre></div>
+<div class="float">
+<img role="img" aria-label="Figure 2: Admixture plot for crossbred animals obtained from Admixplot function" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkAAAAJACAMAAABSRCkEAAAAY1BMVEUAAAAAADoAAGYAOpAAZrYAcrI6AAA6ADo6AGY6Ojo6kNtmAABmADpmZjpmtrZmtv+QOgCQOmaQZgCQ2/+2ZgC225C2/7a2///MeafbkDrbkJDb////tmb/25D//7b//9v////UaLXfAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAZ40lEQVR4nO2dC3fiSpKEs22X7665s/ZMM9PFGmP//185EkIYqlQqPZJ8mIgzp4/no8ibkRUtCTBq+oKgFSLtBiDfIu0GIN8i7QYg3yLtBiDfIu0GIN8i7QYg3yLtBiDfIu0GIN8i7QYg3yLtBiDfIu0GIN8i7QYg3yLtBiDfIu0GIN8i7QYg3yLtBiDfIu0GIN8i7QYg3yLtBiDfIu0GIN8i7QYg3yLtBiDfIu0GIN8i7QYg3yLtBiDfIu0GIN8i7QYg3yLtBiDfIu0GIN8i7QYg3yLtBiDfIu0GIN8i7Qa8aEsvUxa1+vX79u2YEWk3YE+x0zU8/P2Phz/XKHS6RNvH9+bP3T0liLQbsKfBAO0e/v38eo2KATpsJhysfopIuwF7GgrQ59tT87/rdSMBSqL2k0XaDdjTUID2zVkpPTOVT2FJ0n60SLsBexoKUJuM9Mw0FKDjRTQdY3QnIu0G7GkgQF12tteX0cUj0J7u6BBE2g3Y00CAdt2Rha6ubYoBSpP2o0XaDXjQ6fr5sKmdm04B2iFA0KX2p8vn6hs8/RHoji6CSLsBD+oD8fFceYOnvwbCy3joQh/ntxBrFzf4KAOC5om0G4B8i7QbgHyLtBuAfIu0G4B8i7QbgHyLtBuAfIu0G4B8i7QbgHyLtBuAfIu0G4B8i7QbgHyLtBuAfIu0G4B8i7QbgHyLtBuAfIu0G4B8i7QbgHyLtBuAfIu0G4B8i7QbgHyLtBuAfIu0G4B8i2at/nzrviN+R1/dhcZFcxbv+vsE7qfcMBC6B9GMtZ9v59js7ujb39CYaMbai1u37XESg46iGWtxBIIy0ZzFu/62E7gGgk6iWasPm/u7CSA0KtJuAPIt0m4A8i1a9rR7ugsgNCbiqXJW+sj5Vqb9D8og8AEznljA4q1f/tRJ5bTnkoLAB8x4QoAEQeADZjwhQIIg8AEznhAgQRD4gBlPbgLUv4048gsdWTntuaQg8AEzntwE6OvzrfbqPSunPZcUBD5gxpOfAH1l/+hatZz2XFIQ+IAZT44CVL2Lf1ZOey4pCHzAjCdPAZpdTnsuKQh8wIwnBEgQBD5gxhMCJAgCHzDjCQESBIEPmPGEAAmCwAfMeEKABEHgA2Y8IUCCIPABM54QIEEQ+IAZTwiQIAh8wIwnBEgQBD5gxhMCJAgCHzDjCQESBIEPmPGEAAmCwAfMeEKABEHgA2Y8IUCCIPABM54QIEEQ+IAZTwiQIAh8wIwnBEgQBD5gxhMCJAgCHzDjCQESBIEPmPGEAAmCwAfMeEKABEHgA2Y8IUCCIPABM54QIEEQ+IAZTwiQIAh8wIwnBEgQBD5gxhMCJAgCHzDjCQESBIEPmPGEAAmCwAfMeEKABEHgA2Y8IUCCIPABM54QIEEQ+IAZTwiQIAh8wIwnBEgQBD5gxhMCJAgCHzDjCQESBIEPmPGEAAmCwAfMeEKABEHgA2Y8IUCCIPABM54QIEEQ+IAZTwiQIAh8wIwnBEgQBD5gxhMCJAgCHzDjCQESBIEPmPGEAAmCwAfMeEKABEHgA2Y8IUCCIPABM54QIEEQ+IAZTwiQIAh8wIwnBEgQBD5gxhMCJAgCHzDjCQESBIEPmPGEAAmCwAfMeEKABEHgA2Y8IUCCIPABM54QIEEQ+IAZTwiQIAh8wIwnBEgQBD5gxhMCJAgCHzDjCQESBIEPmPHkKEBboqfPNyJ6nVpOey4pCHzAjCc/Ado9vjcZevr6OmxeJpbTnksKAh8w48lNgD7fmtjsf/3+6qI0qZz2XFIQ+IAZT24CdNg0Z679w5+v/s8J5bTnkoLAB8x4chMgHIFMWPAboO9roGOUJpXTnksKAh8w48lPgPAqzIIFzwGaX057LikIfMCMJwRIEAQ+YMaTxwDt8CrMjiePAUqrnJU+oj2XFAQ+YMbTDwhQuZz2XFIQ+IAZTwiQIAh8wIwnRwE6voRvVLgCQoD8gqXKdnxMOzq9f7gnvJFox5ObAF28/4yPMgx5chOg44epnfBhqiFPbgKEI5AJC34D1FwDnQ5BuAZStOA4QM1JrHsVVjj+IEB+wVJlO75OWTntuaQg8AEznhAgQRD4gBlPCJAgCHzAjCcESBAEPmDGEwIkCAIfMOMJARIEgQ+Y8YQACYLAB8x4QoAEQeADZjwhQIIg8AEznhAgQRD4gBlPCJAgCHzAjCcESBAEPmDGEwIkCAIfMOMJARIEgQ+Y8YQACYLAB8x4QoAEQeADZjwhQIIg8AEznhAgQRD4gBlPCJAgCHzAjCcESBAEPmDGEwIkCAIfMOMJARIEgQ+Y8YQACYLAB8x4QoAEQeADZjwhQIIg8AEznhAgQRD4gBlPCJAgCHzAjCcESBAEPmDGEwIkCAIfMOMJARIEgQ+Y8YQACYLAB8x4QoAEQeADZjwhQIIg8AEznhAgQRD4gBlPCJAgCHzAjKcfHaDYycygAh8w4wkBEgSBD5jxhAAJgsAHzHhCgARB4ANmPCFAgiDwATOeECBBEPiAGU8IkCAIfMCMJwRIEAQ+YMYTAiQIAh8w4wkBEgSBD5jxhAAJgsAHzHhCgARB4ANmPCFAgiDwATOeECBBEPiAGU9rwHl/2HZ8nbJyCJBtgADNBIEPmPGEAAmCwAcGdkHHEwIkCAIfQIAGd3ydsnLWZhv4AAI0uOPrlJWzNtvABxCgwR1fp6yctdkGPoAADe74OmXlrM028IFFAeqXcnpCgARB4AMI0OCOr1NWDgG6BnceoO3Dn6+PZ6Jfv6eWQ4CuwX0H6Jifv5rwHDavE8shQNfgrgN02Lw0IXpqf9w9vk8rZy1AMd3BkK6YDBCgwR0fUXvc+Xx7aX/cN8eiSeUQoGsgE6Dp/xXhU1hz9NnhCJR5QoAm6rB5+HM8BO1LV9FZOY4AcYYQAboGsgFqkkNHPU0uhwBdg3sP0OxyCNA1WLC1C1wjQGyjTAECVPivsO34NO0kX4UhQHNd2w9QWuWs9BHWAE2fSxEgQIX/yuKtX/7USeUQoGuAAM0shwBdgzsP0Odbd6IqXAEhQNV+7jtAO3rpftj3P1TLIUDX4K4DdPocrBXjRxkzViBAE10bDdDFL3EwfpiqFKCkFgK0UNmOj+hHHYE4ApTWQoAq2tHpEMR5DYQALZ0L639lqbIdH9Vh070KKxx/EKBqP3ceoPnlEKBrgADNLIcAXYOfG6Dm7FS4rllUrhcCdA1+boDaS2RanSFKAQJ0DWQDNGO2PDu+OkOUAgToGvzwAHURKn7SNb/ckgCVAQI00bVWgNrfeG6/uVN8lT6vXCsEaHhr6x27C1D7Hk+XnNLnFLPKnYQADW9tvWNvATpsil94X1KuFwI0vLX1jr0F6OKDrhWiFCBAw1tb79hbgIr3S1hWrhcCNLy19Y69BWjNlc9QuZMQoOGtrXfsLUD956RrXsQjQJO3tt6xtwDxKCuHAA1vbb1jbwE6/N29CFt3JqMUIEDDW1vv2GuASt85nVmuFwI0vLX1jn0FaPv93VL1z8IQoOExzHAtH6DvI9A6UQoQoOGtrXfsLUA8ysohQMNbW+/YXYDaW2juRn7deWa5k8wHKKZFQ/qUDCBAgzu+fXz/eH463YV1fbmTEKDhra137C1A7UcZe3q9u5fxCBBjgNobid/by3gEiClAzbnrsHl8P2xufApbAxCgia5VAnTY0K/fn2+r8oMATd3aesfuAsSirFw9DQhQZWvnm0SAECCPAWrOYY/v23W/l0gpmBGgeqIQoImuVQK0//V7115E3/izMJkAFScnE6ByxzcNUL2x8lNW73j7O9HtXX9u/TIeAZq7tcUV5adoBKh9H6gN0K3fSESA5m7tAtcaAeqPQNtVH4ZRCoQDVJ1cTFfEtGgpLxEBGt/x7hrofBOyteVOqs92zXYgQIYC1P1a/cpvF1IK6rNdsx0IkKUAcSgrV5/tmu1AgBAgBOjHBKi9fC7efnV+uU712a7ZDgTIUIC6l19yn8ZnJhdsB2eAkuII0Mwd778b7/t9oOrkYroiAwjQsh3v787h+53o6uRiuiIDCNDCHe/eAfp4dv1ZWHVyMV2RAaUArXFtI0BNdu76faCkuOEAFcdQb+ymAeJQVq4+lzXbgQAhQAjQTwlQ9Z+znFfupPpc1mwHAmQoQFuZO5SVTS7YDgRoZoDKK1bv+MpfRUzL9ZphYcF2IECWAiRzk82yhQXbgQDZCdDab4Ql5XrNsLBgOxAgOwE6fjF+tSgFMyws2A4EyE6ApO7SWrawYDsQoOGi0xs7A7YdX6es3AwLC7YDAbIXoM9/4giEAC3e8R1OYQjQ4h3f48NUBGjxjncX0bf/N1PLFlZsh+MA3cT1ArByx9v7RD8xvBtNKajP5bajRIAmgnU7fnobGgFCgBbuePvLZDgCXdZCgObu+G7yNdDHc/E9a0pBfS63HSUCNBEs1eWOt78RNPYq7Pxmdfn9apkAzdgfzgCt6Pg+AvR1PJWNvA90+tqh+hFoxv4gQBPBUmU7/vX/I28ktjcCRoAWdHxPARrXtjnHIUCzO0aAztrRCwI0u2ME6FvtK36ZAE0HCNDEQZXBUmU7XlfzYs1PgNIVMV2RAQRolrIdX6esXH0uHAABqhStA7Ydn6bSLRiycvW5cAAEqFK0DpYq2/FlVc5KH6nPhQMgQJWidbB465c/dVK5+lw4wE8K0HST9xUgDpPTZ1tcEdMVGbhJgG5i0mGAqt+fz8rdZJT12RZXxHRFBkKagtJTEKDBHR/Trv+0vngvzqzcTUZZn21xRUxXLAcI0OCOj6i/C16jXeEfRMjK3WSU9dkWV8R0xXKAAA3u+Iguvj5fuhVnVu4mo6zPtrgipiuWAwRocMdHhCNQrR8EaFznf4kF10DD/SBAFfW/k1j8J6GycjcZZX22xRUxXbEcIECDO75OWbmbjLI+2+KKmK5YDqQDVPSEAAmMEgGqALYdX6esnJVRIkAVwLbj65SVszJKBKgC2HZ8nbJyVkaJAFUA246vU1bOyigRoApg2/F1yspZGSUCVAFsO75OWTkro5QJkCxAgARHiQBVANuOr1NWzsooEaAKYNvxdcrKWRklAlQBbDu+Tlk5K6NEgCqAbcfXKStnZZQIUAWw7fg6ZeWsjBIBqgC2HV+nrJyVUSJAFcC24+uUlbMySgSoAth2fJ2yclZGiQBVANuOr1NWzsooEaAKYNvxdcrKWRt2TFcsB2Y8IUCCw47piuXAjCcESHDYMV2xHJjxhAAJDjumK5YDM54QIMFhx3TFcmDGEwIkOOyYrlgOzHhCgARB5APqnhAgBRD5gLonBEgBRD6g7gkBUgCRD6h7QoAUQOQD6p4QIAUQ+YC6JwRIAUQ+oO4JAVIAkQ+oe0KAFEDkA+qeECAFEPmAuicESAFEPqDuCQFSAJEPqHtCgBRA5APqnhAgBRD5gLonBEgBRD6g7gkBUgCRD6h7QoAUQOQD6p4QIAUQ+YC6JwRIAUQ+oO4JAVIAkQ+oe0KAFEDkA+qeECAFEPmAuicESAFEPqDuCQFSAJEPqHtCgBRA5APqnhAgBRD5gLonBEgBRD6g7gkBUgCRD5jxhAAJgsgHzHhCgARB5ANmPCFAgiDyATOeECBBEPmAGU8IkCCIfMCMJwRIEEQ+YMYTAiQIIh8w4wkBEgSRD5jx5ChAOyJ6Pf7w8GdaOe25pCDyATOe/ARo9+v312Hz9IUAaVrwG6DPt5fjn4/vCJCiBb8BOmyOp6+v7eM7AmTIk5sAdUegRtsnBMiQJzcBOp+4DhtCgOx48hOg5lVYdxL7fEOA7HhyFKD55bTnkoLIB8x4QoAEQeQDZjx5DBAuog158higtMpZ6SPac0lB5ANmPP2AAJXLac8lBZEPmPGEAAmCyAfMeHIUoM+37kRVuAJCgPyCpcp2fEw7Or0Vve9/qJbTnksKIh8w48lNgM4fZTRRenyfVk57LimIfMCMJzcB6j9MbbTHy3g7ntwECEcgExb8Buj8URiugTQtOA5Q+zH8UYXjDwLkFyxVtuPrlJXTnksKIh8w4wkBEgSRD5jxhAAJgsgHzHhCgARB5ANmPCFAgiDyATOeECBBEPmAGU8IkCCIfMCMJwRIEEQ+YMYTAiQIIh8w4wkBEgSRD5jxhAAJgsgHzHhCgARB5ANmPCFAgiDyATOeECBBEPmAGU8IkCCIfMCMJwRIEEQ+YMYTAiQIIh8w4wkBEgSRD5jxhAAJgsgHzHhCgARB5ANmPCFAgiDyATOeECBBEPmAGU8IkCCIfMCMJwRIEEQ+YMYTAiQIIh8w4wkBEgSRD5jxhAAJgsgHzHhCgARB5ANmPCFAgiDyATOeECBBEPmAGU8IkCCIfMCMJwRIEEQ+YMYTAiQIIh8w4wkBEgSRD5jxhAAJgsgHzHhCgARB5ANmPCFAgiDyATOeECBBEPmAGU8IkCCIfMCMJwRIEEQ+YMYTAiQIIh8w4wkBEgSRD5jxhAAJgsgHzHhCgARB5ANmPCFAgiDyATOeECBBEPmAGU8IkCCIfMCMJwRIEEQ+YMYTAiQIIh8w4wkBEgSRD5jxhAAJgsgHzHhCgARB5ANmPCFAgiDyATOeECBBEPmAGU8IkCCIfMCMJwRIEEQ+YMYTAiQIIh8w4wkBEgSRD5jxhAAJgsgHzHhyFKDPNzrq4c/UctpzSUHkA2Y8+QnQjl66H/b9D9Vy2nNJQeQDZjy5CdDn2zk2u8f3aeW055KCyAfMeHIToMPmtf9xXziJZeW055KCyAfMeHITIByBTFjwG6DmGuh0CMI1kKIFxwFqTmLdq7DC8QcB8guWKtvxdcrKac8lBZEPmPGEAAmCyAfMePIYoB1ehdnx5DFAaZWzWMpBfkTaDUC+RdoNQL5Fs1ZXP0yF7k00Z3H9w1To3kQz1k74KAO6N9GMtRM+TIXuTTRjLY5AUCaas7j+YSp0b6JZq6sfpkL3JtJuAPIt0m4A8i3SbgDyLdJuAPIt0m4A8i3SbgDyLdJuAPIt0m4A8i3SbgDyLdJuAPIt0m4A8i3SbgDyLdJuAPIt0m4A8i3SbgDyLdJuAPIt0m4A8i26/X/i439Kv4C/HfrNxv3pS9Kv+UNpwWLl7oHu9yefxmrsiH79zh89fv/tZWTBecVItxdPLTTaryg3eq5R6qNVN8baivpcF4l4yw3osCl9g2Nf/tXYw2Z4368KFiufHvj4qzTQfsW2GfnHczbSz7eG79odbW8isR/Yl+8VxW4vnlpo9Lyi2Oh5RaHRo7oxljr9XlHsdJWIuV6mffF7rM3fu2KASnf/uCxYrNw/UP7u0WnFYdMeZfJvmHRb1fRwXPD5lg/9vKLY7cVTC41+ryg1el5RarRb1I6x2OnX1aBH5rpQxFwv1Z5eSuPZPf6rFKCP5+K3Ps4Fi5XPD+xKf9v6Fd3f2OLf2xMvbMv3inK3XTzKIzitKDbarxhr9GKMhU6/V4zMdamIu2CuwvSa4/bgNVCr7ehflHPB4r50D2z/t7+SKaw47UvhsqBvYle+tOhWlLvtn1oO0HHFWKPHFSONXo5xuNOLFeNzXSTiLphreHrttxRLAeqO2PWC4wE6bNry2+FSxxWnE9FwgE7ffduXt/a0otjt91NLjXYrxhrtVpQbvRhjodOLFZW5LhKxV8w0PL32hF4KUOmkkhasHIHG1uwvLqIHA7Q/vyr6fBtus18x0m3/1LFTWF+8tOa4otjo1RgHO71YUZnrIhF7xUyDkzm+8CgFqHhqSwpOCVDhtctpxba5vv3P3wNjvfzu7fDczyvGuj09deRWAufipRdZp5dhw40mYxzo9HJFZa6LROwVMw1ObzfyrkTtSDsvQMMvkS9XDLxJs7s8Gwxu7XnFaLenp44E6Fy8+Fr+e0XeaDLGgU4vVtziDKZ4Ef1V/BtR/LuYFhwPUFdm9BR21MCr4/5qo1zi+3qk0O3VU4cPwv2K4n8leaB0R4t2jKNmT4OuzXWRiL9kqtkBqp2qJ78Ka69Rxi6ij2+rDR32z6922w4vbkoysKLY7eVThxs9ryg22q8oNfq9qtjp94qbXAKZDFDt3a7Jp7Bt+Z37bkX7GcLAVE+H/dO1R+Fjin5FsduLpxYaPa8oNto/UGj0tOg4xhGz/Ycdt7ipE/GXhO5JpN0A5Fuk3QDkW6TdAORbpN0A5Fuk3QDkW6TdAORbpN0A5Fuk3QDkW6TdAORbpN0A5Fuk3QDkW6TdAORbpN0A5Fuk3QDkW6TdAORbpN0A5Fuk3QDkW6TdAORbpN0A5Fuk3QDkW6TdAORbpN0A5Fuk3QDkW6TdAORbpN0A5Fuk3QDkW6TdgGFtr+/4ddiUvnpefuTni7QbsKvD3/+YeDcCBAga0O7h3xNvqIMAQbk+35662+YeNv+3ae+c0sbk47n9+eXjubuVyra/9Vf7CP9d4D2ItBswq/Z2TMf75h423U9dTI53qG9Obe3NdtobQ7VLmkeOd/8q3TD4J4u0GzCrbX//9+MfTUC6AL189X+8HtqbXrbJaR4ZuQvizxZpN2BV3R0p2ztzH69wmj+6AL1+XfxxvDnza/fgnSaItBuwqu+7m5YD1Kw5Xmi3jxz/+Z77O4MhQAWd/tmJ9ibyxQCd/0//Kmx7i7tYGhdpN2BU/R1NTxfPgwHq/r0N+g7QPb6cJ+0GjKq/gWxzwTx6BDps6OV4Ed0G7ib30TUu0m7Apr7vyb19+M/YNdCv39vuGLWnkRvx/mCRdgOQb5F2A5BvkXYDkG+RdgOQb5F2A5BvkXYDkG+RdgOQb5F2A5BvkXYDkG+RdgOQb5F2A5BvkXYDkG+RdgOQb5F2A5BvkXYDkG+RdgOQb5F2A5BvkXYDkG+RdgOQb5F2A5BvkXYDkG+RdgOQb5F2A5BvkXYDkG/9F+38W2ZwXv+9AAAAAElFTkSuQmCC" alt="Figure 2: Admixture plot for crossbred animals obtained from Admixplot function" />
+<div class="figcaption">Figure 2: Admixture plot for crossbred animals
+obtained from <code>Admixplot</code> function</div>
+</div>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
+<div id="ref-barbato_snep:_2015" class="csl-entry">
+Barbato, M., Orozco-terWengel, P., Tapio, M., &amp; Bruford, M. W.
+(2015). <span>SNeP</span>: A tool to estimate trends in recent effective
+population size trajectories using genome-wide <span>SNP</span> data.
+<em>Frontiers in Genetics</em>, <em>6</em>. <a href="https://doi.org/10.3389/fgene.2015.00109">https://doi.org/10.3389/fgene.2015.00109</a>
+</div>
+<div id="ref-purcell_plink:_2007" class="csl-entry">
+Purcell, S., Neale, B., Todd-Brown, K., Thomas, L., Ferreira, M. A. R.,
+Bender, D., Maller, J., Sklar, P., De Bakker, P. I. W., Daly, M. J.,
+&amp; Sham, P. C. (2007). PLINK: A tool set for whole-genome association
+and population-based linkage analyses. <em>The American Journal of Human
+Genetics</em>, <em>81</em>(3), 559–575. <a href="https://doi.org/10.1086/519795">https://doi.org/10.1086/519795</a>
+</div>
+<div id="ref-sahoo2025ascertaining" class="csl-entry">
+Sahoo, S., Ferdosi, M., Werf, J. van der, &amp; De las Heras-Saldana, S.
+(2025). Ascertaining the breed composition of an admixed sheep
+population using genomic information: A simulation study. <em>Proc.
+Assoc. Advmt. Anim. Breed. Genet</em>, <em>26</em>, 323–326.
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
