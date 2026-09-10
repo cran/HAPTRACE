@@ -34,6 +34,7 @@ Population_A <- Sim_HP[1:(nrow(Sim_HP)/2),]
 Population_B <- Sim_HP[(nrow(Sim_HP)/2 + 1):nrow(Sim_HP), ]
 
 EffectA <- Rescale(Haplotype = Population_A, Effect = Effect, Phenosd = 3, h2 = 0.3)
+Effect_Sim <- EffectA$QTLeffect
 
 ## -----------------------------------------------------------------------------
 # Assignment of population code
@@ -49,7 +50,7 @@ Population_B <- Recode_Haplotype(df = Population_B, popBase = 2)
 popA <- GenOnePopulation(ngenerations = 1, map = MAP_QTL_Pop,
                          populationSim = Population_A, nSire = 20, nDam = 100,
                          mutationRate = 2.5 * 10^-5, SelType = "random", 
-                         h2 = 0.3, trait_mean = 10, VarE = 0.6,Effect = Effect, 
+                         h2 = 0.3, trait_mean = 10, VarE = 0.6,Effect = Effect_Sim, 
                          recL = 10, nChr = 10, minLength = 200, IndStartVal=1,
                          prefixID = "A", nProgeny = 300)
 
@@ -57,7 +58,7 @@ popA <- GenOnePopulation(ngenerations = 1, map = MAP_QTL_Pop,
 popB <- GenOnePopulation(ngenerations = 1, map = MAP_QTL_Pop,
                          populationSim = Population_B, nSire = 10, nDam = 100,
                          mutationRate = 2.5 * 10^-5, SelType = "random", 
-                         h2 = 0.3, trait_mean = 30, VarE = 0.6 ,Effect = Effect,
+                         h2 = 0.3, trait_mean = 30, VarE = 0.6 ,Effect = Effect_Sim,
                          recL = 10,nChr = 10, minLength = 200, IndStartVal=1,
                          prefixID = "B", nProgeny = 300)
 
@@ -70,7 +71,7 @@ F1Cross <- TwoPopCross(map = MAP_QTL_Pop, populationSim_A = popA$Haplotype,
                        nSireB = 10, nDamB = 100, Sire_From = "A",
                        mutationRate = 2.5 * 10^-5, SelType = "random", h2 = 0.3,
                        trait_mean = 20,VarE_PopA = 0.6, VarE_PopB = 0.6, 
-                       Effect_PopA = Effect, Effect_PopB = Effect,
+                       Effect_PopA = Effect_Sim, Effect_PopB = Effect_Sim,
                        IndStartVal = 1, prefixID = "F1C", nProgeny = 300, recL = 10, 
                        nChr = 10, minLength = 200)
 
@@ -80,7 +81,7 @@ F3 <- GenOnePopulation(ngenerations = 2, map = MAP_QTL_Pop,
                        populationSim = F1Cross$Haplotype,
                        nSire = 20,nDam = 100,mutationRate = 2.5 * 10^-5,
                        SelType = "random",h2 = 0.3, trait_mean = 20,
-                       VarE = 0.6, Effect = Effect, recL = 10, 
+                       VarE = 0.6, Effect = Effect_Sim, recL = 10, 
                        nChr = 10, minLength = 200, IndStartVal = 1,
                        prefixID = "C2", nProgeny = 300)
 
